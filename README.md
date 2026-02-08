@@ -1,4 +1,4 @@
-# Fury of the Furries - Web Tribute
+# Mamonas Assassinas - O Jogo
 
 Versao web inspirada em **Fury of the Furries (1993)**, feita com HTML, CSS e JavaScript puro.
 
