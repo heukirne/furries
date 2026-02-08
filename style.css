@@ -1,0 +1,116 @@
+:root {
+  --bg-1: #06081f;
+  --bg-2: #101944;
+  --panel: #131a31;
+  --panel-border: #2e3d74;
+  --text: #eaf0ff;
+  --muted: #a6b8df;
+  --accent: #57f29f;
+  --accent-2: #f5cf4b;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  background: radial-gradient(circle at 20% 10%, #1f2b65 0%, var(--bg-1) 55%),
+    linear-gradient(180deg, var(--bg-2), var(--bg-1));
+  color: var(--text);
+  font-family: "Trebuchet MS", "Verdana", sans-serif;
+}
+
+.layout {
+  width: min(1400px, 96vw);
+  margin: 2rem auto;
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 1rem;
+  align-items: start;
+}
+
+.game-wrap {
+  background: rgba(8, 12, 34, 0.88);
+  border: 2px solid #3e5394;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 12px 38px rgba(0, 0, 0, 0.48);
+}
+
+.game-header {
+  padding: 0.75rem 1rem;
+  background: linear-gradient(180deg, #1f2a58, #172145);
+  border-bottom: 1px solid #30447f;
+}
+
+.game-header h1 {
+  margin: 0;
+  font-size: 1.05rem;
+  letter-spacing: 0.02em;
+}
+
+.game-header p {
+  margin: 0.25rem 0 0;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+#game {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #05091e;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+.game-footer {
+  padding: 0.55rem 1rem 0.75rem;
+  border-top: 1px solid #2c3f78;
+  color: #8ff0c1;
+  font-size: 0.92rem;
+}
+
+.panel {
+  background: var(--panel);
+  border: 2px solid var(--panel-border);
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.34);
+}
+
+.panel h2 {
+  margin: 0.4rem 0;
+  color: var(--accent-2);
+  font-size: 1rem;
+}
+
+.panel ul {
+  margin: 0.5rem 0 1rem;
+  padding-left: 1rem;
+}
+
+.panel li,
+.panel p {
+  color: var(--muted);
+  line-height: 1.35;
+  font-size: 0.94rem;
+}
+
+.panel strong {
+  color: var(--text);
+}
+
+@media (max-width: 1100px) {
+  .layout {
+    grid-template-columns: 1fr;
+    margin: 0.75rem auto 1.2rem;
+  }
+
+  .panel {
+    order: -1;
+  }
+}
