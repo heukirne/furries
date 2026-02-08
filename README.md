@@ -2,6 +2,8 @@
 
 Versao web inspirada em **Fury of the Furries (1993)**, feita com HTML, CSS e JavaScript puro.
 
+![Mamonas Assassinas - Hero Brand](https://raw.githubusercontent.com/heukirne/mamonas/refs/heads/main/hero-brand.png)
+
 ## Como jogar
 
 1. No diretorio do projeto, rode:
