@@ -21,10 +21,11 @@ Tambem funciona abrindo `index.html`, mas servidor local e recomendado.
 ## Controles
 
 - `A` / `D` ou setas: mover
-- `W` / seta para cima / `Espaco`: pular (ate 3 pulos)
+- `W` / seta para cima / `Espaco`: pular (1 pulo)
 - `J` / `Ctrl`: habilidade da forma atual
 - `1-4`: troca direta de forma
-- `Q` / `E`: ciclar formas
+- `E`: ciclar formas
+- `Q`: mostrar/ocultar instrucoes
 - `R`: reiniciar partida
 
 ## Formas e habilidades

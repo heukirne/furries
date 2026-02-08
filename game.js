@@ -1,6 +1,7 @@
 (() => {
   const canvas = document.getElementById("game");
   const statusEl = document.getElementById("status");
+  const instructionsEl = document.getElementById("instructions");
   if (!canvas) {
     return;
   }
@@ -66,6 +67,8 @@
   const MOVE_UP_KEYS = ["ArrowUp", "KeyW", "Space"];
   const MOVE_DOWN_KEYS = ["ArrowDown", "KeyS"];
   const ABILITY_KEYS = ["KeyJ", "ControlLeft", "ControlRight"];
+  const MAX_JUMPS = 1;
+  const AIR_SPIN_SPEED = Math.PI * 5.5;
 
   const keyState = Object.create(null);
   let prevKeyState = Object.create(null);
@@ -99,19 +102,9 @@
     }
   });
 
-  const starsNear = Array.from({ length: 120 }, () => ({
-    x: Math.random() * canvas.width * 3,
-    y: Math.random() * (canvas.height * 0.75),
-    size: 1 + Math.random() * 2,
-    phase: Math.random() * Math.PI * 2,
-  }));
-
-  const starsFar = Array.from({ length: 80 }, () => ({
-    x: Math.random() * canvas.width * 2.5,
-    y: Math.random() * (canvas.height * 0.65),
-    size: 1 + Math.random() * 1.5,
-    phase: Math.random() * Math.PI * 2,
-  }));
+  let starsNear = [];
+  let starsFar = [];
+  let instructionsVisible = false;
 
   const game = {
     level: null,
@@ -126,6 +119,42 @@
     timerMax: 240,
     message: "",
   };
+
+  function rebuildBackdropStars() {
+    starsNear = Array.from({ length: 120 }, () => ({
+      x: Math.random() * canvas.width * 3,
+      y: Math.random() * (canvas.height * 0.75),
+      size: 1 + Math.random() * 2,
+      phase: Math.random() * Math.PI * 2,
+    }));
+
+    starsFar = Array.from({ length: 80 }, () => ({
+      x: Math.random() * canvas.width * 2.5,
+      y: Math.random() * (canvas.height * 0.65),
+      size: 1 + Math.random() * 1.5,
+      phase: Math.random() * Math.PI * 2,
+    }));
+  }
+
+  function resizeCanvas() {
+    const width = Math.max(1, Math.floor(window.innerWidth));
+    const height = Math.max(1, Math.floor(window.innerHeight));
+    if (canvas.width === width && canvas.height === height) {
+      return;
+    }
+    canvas.width = width;
+    canvas.height = height;
+    rebuildBackdropStars();
+  }
+
+  function setInstructionsVisible(visible) {
+    instructionsVisible = visible;
+    if (!instructionsEl) {
+      return;
+    }
+    instructionsEl.classList.toggle("hidden", !visible);
+    instructionsEl.setAttribute("aria-hidden", visible ? "false" : "true");
+  }
 
   function clamp(v, min, max) {
     return Math.max(min, Math.min(max, v));
@@ -351,6 +380,8 @@
       inWater: false,
       actionTimer: 0,
       actionType: "none",
+      airSpin: 0,
+      airSpinActive: false,
     };
     game.projectiles = [];
     game.camera.x = 0;
@@ -380,6 +411,8 @@
     p.hook = null;
     p.actionTimer = 0;
     p.actionType = "none";
+    p.airSpin = 0;
+    p.airSpinActive = false;
   }
 
   function getTile(tx, ty) {
@@ -558,7 +591,6 @@
     if (anyPressed(["Digit2"])) switchForm("blue");
     if (anyPressed(["Digit3"])) switchForm("red");
     if (anyPressed(["Digit4"])) switchForm("green");
-    if (anyPressed(["KeyQ"])) cycleForm(-1);
     if (anyPressed(["KeyE"])) cycleForm(1);
   }
 
@@ -824,16 +856,32 @@
         if (p.onGround) {
           p.jumpCount = 0;
         }
-        if (p.onGround || p.jumpCount < 3) {
+        if (p.onGround || p.jumpCount < MAX_JUMPS) {
           const jump = 420 + p.jumpCount * 70;
           p.vy = -jump;
           p.onGround = false;
           p.jumpCount += 1;
+          p.airSpinActive = true;
         }
       }
 
       moveHorizontal(p, dt);
       moveVertical(p, dt);
+    }
+
+    if (p.airSpinActive && !p.onGround && !p.inWater && !p.hook) {
+      const spinDir = p.facing < 0 ? -1 : 1;
+      p.airSpin += spinDir * AIR_SPIN_SPEED * dt;
+      if (p.airSpin > Math.PI) {
+        p.airSpin -= Math.PI * 2;
+      } else if (p.airSpin < -Math.PI) {
+        p.airSpin += Math.PI * 2;
+      }
+    } else {
+      p.airSpin = 0;
+      if (p.onGround || p.inWater || p.hook) {
+        p.airSpinActive = false;
+      }
     }
 
     const hazard = rectTouchesTile(
@@ -973,6 +1021,7 @@
           enemy.alive = false;
           player.vy = -320;
           player.jumpCount = 1;
+          player.airSpinActive = true;
           game.score += 180;
         } else {
           loseLife("atingido por inimigo");
@@ -1013,7 +1062,7 @@
     if (game.state === "playing") {
       statusEl.textContent =
         game.message ||
-        "Use as formas certas para cada obstáculo: fogo, água, terra e ar.";
+        "Use as formas certas para cada obstaculo: fogo, agua, terra e ar. Q alterna instrucoes.";
     } else if (game.state === "won") {
       statusEl.textContent = "Você venceu. Pressione R para reiniciar.";
     } else {
@@ -1024,6 +1073,9 @@
   function update(dt) {
     if (anyPressed(["KeyR"])) {
       restartGame();
+    }
+    if (anyPressed(["KeyQ"])) {
+      setInstructionsVisible(!instructionsVisible);
     }
 
     if (game.state !== "playing") {
@@ -1327,7 +1379,7 @@
     }
   }
 
-  function drawPlayerFallback(time) {
+  function drawPlayerFallback(time, spinAngle = 0) {
     const p = game.player;
     if (p.invuln > 0 && Math.floor(p.invuln * 14) % 2 === 0) {
       return;
@@ -1342,6 +1394,13 @@
       ctx.beginPath();
       ctx.arc(x + p.w * 0.5, y + p.h * 0.5, 18 + p.transformFx * 14, 0, Math.PI * 2);
       ctx.fill();
+    }
+
+    if (spinAngle !== 0) {
+      ctx.save();
+      ctx.translate(x + p.w * 0.5, y + p.h * 0.5);
+      ctx.rotate(spinAngle);
+      ctx.translate(-(x + p.w * 0.5), -(y + p.h * 0.5));
     }
 
     const bounce = Math.abs(p.vx) > 20 ? Math.sin(time * 18) * 1.1 : 0;
@@ -1373,6 +1432,10 @@
       ctx.fillRect(px, py, 2, 3);
     }
 
+    if (spinAngle !== 0) {
+      ctx.restore();
+    }
+
     if (p.form === "yellow" && p.charging) {
       ctx.fillStyle = `rgba(255, 220, 100, ${0.3 + p.charge * 0.45})`;
       ctx.beginPath();
@@ -1401,7 +1464,7 @@
     if (Math.abs(p.vx) > 30 || (p.inWater && Math.abs(p.vx) + Math.abs(p.vy) > 40)) {
       return getRunState(time);
     }
-    return Math.floor(time * 2.4) % 2 === 0 ? "idle1" : "idle2";
+    return "idle1";
   }
 
   function drawPlayer(time) {
@@ -1412,6 +1475,7 @@
 
     const x = p.x - game.camera.x;
     const y = p.y - game.camera.y;
+    const spinAngle = !p.onGround && !p.inWater && !p.hook ? p.airSpin : 0;
 
     if (p.transformFx > 0) {
       ctx.fillStyle = `rgba(255, 255, 255, ${p.transformFx * 1.8})`;
@@ -1421,17 +1485,33 @@
     }
 
     const state = getPlayerAnimState(time);
-    const drawn = drawAtlasFrame(
-      SPRITE_ROWS[p.form],
-      state,
-      x + PLAYER_SPRITE_OFFSET_X,
-      y + PLAYER_SPRITE_OFFSET_Y,
-      PLAYER_SPRITE_SIZE,
-      p.facing < 0
-    );
+    let drawn = false;
+    if (spinAngle !== 0) {
+      ctx.save();
+      ctx.translate(x + p.w * 0.5, y + p.h * 0.5);
+      ctx.rotate(spinAngle);
+      drawn = drawAtlasFrame(
+        SPRITE_ROWS[p.form],
+        state,
+        -p.w * 0.5 + PLAYER_SPRITE_OFFSET_X,
+        -p.h * 0.5 + PLAYER_SPRITE_OFFSET_Y,
+        PLAYER_SPRITE_SIZE,
+        p.facing < 0
+      );
+      ctx.restore();
+    } else {
+      drawn = drawAtlasFrame(
+        SPRITE_ROWS[p.form],
+        state,
+        x + PLAYER_SPRITE_OFFSET_X,
+        y + PLAYER_SPRITE_OFFSET_Y,
+        PLAYER_SPRITE_SIZE,
+        p.facing < 0
+      );
+    }
 
     if (!drawn) {
-      drawPlayerFallback(time);
+      drawPlayerFallback(time, spinAngle);
       return;
     }
 
@@ -1559,6 +1639,9 @@
     drawHUD();
   }
 
+  resizeCanvas();
+  setInstructionsVisible(false);
+  window.addEventListener("resize", resizeCanvas);
   restartGame();
 
   let last = performance.now();

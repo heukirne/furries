@@ -3,46 +3,47 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Fury of the Furries - Web Tribute</title>
+    <title>Mamonas Assassinas - O Jogo</title>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <main class="layout">
       <section class="game-wrap">
         <header class="game-header">
-          <h1>Fury of the Furries - Web Tribute</h1>
-          <p>Versão web inspirada no clássico de 1993</p>
+          <h1>Mamonas Assassinas - O Jogo</h1>
+          <p>Versao web inspirada em Fury of the Furries (1993)</p>
         </header>
         <canvas id="game" width="960" height="540" aria-label="Jogo Fury of the Furries"></canvas>
         <footer class="game-footer">
           <span id="status">Carregando...</span>
         </footer>
+
+        <aside id="instructions" class="panel hidden" aria-hidden="true">
+          <h2>Controles</h2>
+          <ul>
+            <li><strong>Mover:</strong> A / D ou Setas esquerda/direita</li>
+            <li><strong>Pular:</strong> W / Seta cima / Espaço (1 pulo)</li>
+            <li><strong>Habilidade:</strong> J / Ctrl</li>
+            <li><strong>Trocar forma:</strong> 1-4 ou E</li>
+            <li><strong>Instruções:</strong> Q (mostrar/ocultar)</li>
+            <li><strong>Reiniciar fase:</strong> R</li>
+          </ul>
+
+          <h2>Formas</h2>
+          <ul>
+            <li><strong>1 Amarelo (Fogo):</strong> atira fogo, quebra barreiras roxas</li>
+            <li><strong>2 Azul (Água):</strong> mergulha, nada e atira bolhas</li>
+            <li><strong>3 Vermelho (Terra):</strong> escava blocos marrons (D)</li>
+            <li><strong>4 Verde (Ar):</strong> gancho nos pontos azuis (H)</li>
+          </ul>
+
+          <h2>Objetivo</h2>
+          <p>
+            Colete frutas, sobreviva aos perigos e chegue ao <strong>EXIT</strong>.
+            Algumas áreas só passam com a forma certa.
+          </p>
+        </aside>
       </section>
-
-      <aside class="panel">
-        <h2>Controles</h2>
-        <ul>
-          <li><strong>Mover:</strong> A / D ou Setas esquerda/direita</li>
-          <li><strong>Pular:</strong> W / Seta cima / Espaço (até 3 pulos)</li>
-          <li><strong>Habilidade:</strong> J / Ctrl</li>
-          <li><strong>Trocar forma:</strong> 1-4 ou Q / E</li>
-          <li><strong>Reiniciar fase:</strong> R</li>
-        </ul>
-
-        <h2>Formas</h2>
-        <ul>
-          <li><strong>1 Amarelo (Fogo):</strong> atira fogo, quebra barreiras roxas</li>
-          <li><strong>2 Azul (Água):</strong> mergulha, nada e atira bolhas</li>
-          <li><strong>3 Vermelho (Terra):</strong> escava blocos marrons (D)</li>
-          <li><strong>4 Verde (Ar):</strong> gancho nos pontos azuis (H)</li>
-        </ul>
-
-        <h2>Objetivo</h2>
-        <p>
-          Colete frutas, sobreviva aos perigos e chegue ao <strong>EXIT</strong>.
-          Algumas áreas só passam com a forma certa.
-        </p>
-      </aside>
     </main>
 
     <script src="game.js"></script>
