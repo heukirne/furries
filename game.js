@@ -67,7 +67,7 @@
   const MOVE_UP_KEYS = ["ArrowUp", "KeyW", "Space"];
   const MOVE_DOWN_KEYS = ["ArrowDown", "KeyS"];
   const ABILITY_KEYS = ["KeyJ", "ControlLeft", "ControlRight"];
-  const MAX_JUMPS = 1;
+  const MAX_JUMPS = 2;
   const AIR_SPIN_SPEED = Math.PI * 5.5;
 
   const keyState = Object.create(null);

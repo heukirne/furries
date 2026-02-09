@@ -21,7 +21,7 @@ Tambem funciona abrindo `index.html`, mas servidor local e recomendado.
 ## Controles
 
 - `A` / `D` ou setas: mover
-- `W` / seta para cima / `Espaco`: pular (1 pulo)
+- `W` / seta para cima / `Espaco`: pular (2 pulos)
 - `J` / `Ctrl`: habilidade da forma atual
 - `1-4`: troca direta de forma
 - `E`: ciclar formas
